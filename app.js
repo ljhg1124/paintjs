@@ -4,11 +4,14 @@ const colors = document.getElementsByClassName("jsColor");
 const range = document.getElementById("jsRange");
 const mode = document.getElementById("jsMode");
 
+const INITIAL_COLOR = "#2c2c2c";
+const CANVAS_SIZE = 650;
 
-canvas.width = 650;
-canvas.height = 650;
+canvas.width = CANVAS_SIZE;
+canvas.height = CANVAS_SIZE;
 
-ctx.strokeStyle = "#2c2c2c";    // 색상
+ctx.strokeStyle = INITIAL_COLOR;    // 색상
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;            // 라인 굵기
 
 let painting = false;
@@ -29,10 +32,12 @@ function onMouseMove(event){
         ctx.beginPath();    // 선의 시작
         ctx.moveTo(x,y);    // 움직이기 시작점
     } else {
-        ctx.lineTo(x,y);    // 선의 끝점
-        //ctx.closePath();  
-        ctx.stroke();       // 흭 긋기
-        // 마우스가 움직이는 동안 계속 path를 생성하고있다
+        if(!filling){
+            ctx.lineTo(x,y);    // 선의 끝점
+            //ctx.closePath();  
+            ctx.stroke();       // 흭 긋기
+            // 마우스가 움직이는 동안 계속 path를 생성하고있다
+        }
     }
 }
 
@@ -43,6 +48,7 @@ function onMouseDown(event){
 function handleColorClick(event){
     const color = event.target.style.backgroundColor;
     ctx.strokeStyle = color;
+    ctx.fillStyle = color;
 }
 
 function handleRangeChange(event){
@@ -60,11 +66,17 @@ function handleModeClick(event){
     }
 }
 
+function handleCanvasClick(){
+    if(filling){
+        ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
+}
 if(canvas){
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
     canvas.addEventListener("mouseleave", stopPainting);
+    canvas.addEventListener("click", handleCanvasClick );
 }
 
 // 마우스 위치 값 관련 정보
